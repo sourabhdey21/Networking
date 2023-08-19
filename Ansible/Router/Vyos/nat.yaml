@@ -1,0 +1,23 @@
+---
+- name: Configure Masquerading on VyOS Router
+  hosts: vyos
+  gather_facts: yes
+  tasks:
+    - name: Set Masquerade Rule
+      vyos_command:
+        commands:
+          - configure
+          - set nat source rule 100 outbound-interface eth0  # Replace with your outbound interface
+          - set nat source rule 100 source address 192.168.127.0/24  # Replace with your source subnet
+          - set nat source rule 100 translation address masquerade
+          - set nat source rule 100 outbound-interface eth0  
+          - set nat source rule 100 source address 155.1.132.0/24
+          - set nat source rule 100 translation address masquerade
+          - commit 
+          - save
+      notify: Commit Configuration
+  
+  vars:
+    ansible_connection: network_cli
+    ansible_network_os: vyos
+    ansible_user: vyos
