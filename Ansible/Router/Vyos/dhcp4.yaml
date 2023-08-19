@@ -1,0 +1,26 @@
+---
+- name: Configure DHCP server on VyOS router
+  hosts: vyos
+  become: yes
+
+  tasks:
+    - name: Configure DHCP server for 2nd inbound interface 
+      vyos_command:
+        commands:
+          - "configure"
+          - "set service dhcp-server shared-network-name LAN2 subnet {{ subnet }} lease 86400"
+          - "set service dhcp-server shared-network-name LAN2 subnet {{ subnet }} range 0 start {{ start_ip }} "
+          - "set service dhcp-server shared-network-name LAN2 subnet {{ subnet }} range 0 stop {{ stop_ip }} "
+          - "set service dhcp-server shared-network-name LAN2 subnet {{ subnet }} default-router '{{ default_gateway }}'"
+          - "set service dhcp-server shared-network-name LAN2 subnet {{ subnet }} name-server '{{ dns_server }}'"
+          - "commit"
+          - "save"
+      vars:
+        subnet: "155.1.32.0/24"  # Replace with your desired subnet
+        start_ip: "155.1.32.100"  # Replace with the starting IP address for DHCP range
+        stop_ip: "155.1.32.200"  # Replace with the ending IP address for DHCP range
+        default_gateway: "155.1.32.2"  # Replace with your router's IP address
+        dns_server: "8.8.8.8"  # Replace with your preferred DNS server
+        ansible_connection: network_cli
+        ansible_network_os: vyos
+        ansible_user: vyos
